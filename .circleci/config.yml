@@ -16,7 +16,7 @@ jobs:
     steps:
       - checkout
       - run: bundle install --path vendor/bundle  # install dependencies
-      - run: bundle exec rake db:create db:schema:load  # setup database
+      - run: bundle exec rake db:create db:schema:load db:migrate  # setup database
       - run:
           name: Run tests
           command: rake
