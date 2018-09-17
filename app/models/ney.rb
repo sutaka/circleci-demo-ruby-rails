@@ -1,0 +1,2 @@
+class Ney < ApplicationRecord
+end
