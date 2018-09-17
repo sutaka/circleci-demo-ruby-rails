@@ -24,9 +24,6 @@ jobs:
   deploy:
     machine:
         enabled: true
-    working_directory: ~/circleci-demo-workflows
-    environment:
-      HEROKU_APP: "railscircleci"
     steps:
       - checkout
       - run:
