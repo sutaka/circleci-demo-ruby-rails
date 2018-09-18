@@ -1,6 +1,8 @@
 version: 2
 jobs:
-  build:
+  build_frontend:
+
+  backend_test:
     parallelism: 3
     docker:
       - image: circleci/ruby:2.4.2-node
@@ -9,7 +11,6 @@ jobs:
           BUNDLE_RETRY: 3
           BUNDLE_PATH: vendor/bundle
           PGHOST: 127.0.0.1
-          PGUSER: circleci-demo-ruby
           RAILS_ENV: test
       - image: circleci/postgres:9.5-alpine
     steps:
@@ -63,10 +64,16 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build
+      - backend_test
       - deploy_staging:
           requires:
-            - build
+            - backend_test
           filters:
             branches:
               only: staging
+      - deploy_master:
+          requires:
+            - backend_test
+          filters:
+            branches:
+              only: master
