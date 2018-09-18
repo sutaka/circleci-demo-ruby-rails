@@ -17,28 +17,56 @@ jobs:
       - run: bundle install --path vendor/bundle
       - run: bundle exec rake db:create db:schema:load db:migrate
       - run:
-          name: Run tests
-          command: bundle exec rspec spec/
+          name: Run request specs
+          command: bundle exec rspec spec/requests
+      - run:
+          name: Run model specs
+          command: bundle exec rspec spec/models
 
-  deploy:
+  deploy_staging:
     machine:
         enabled: true
     steps:
       - checkout
       - run:
-          name: Deploy Master to Heroku
+          name: Deploy to Heroku
+          command: |
+            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git staging
+      - run:
+          name: Migrate DB
+          command: |
+            heroku run rake db:migrate --app $HEROKU_APP_NAME
+      - run:
+          name: Restart the app
+          command: |
+            heroku restart --app $HEROKU_APP_NAME
+
+  deploy_master:
+    machine:
+        enabled: true
+    steps:
+      - checkout
+      - run:
+          name: Deploy to Heroku
           command: |
             git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
+      - run:
+          name: Migrate DB
+          command: |
             heroku run rake db:migrate --app $HEROKU_APP_NAME
+      - run:
+          name: Restart the app
+          command: |
+            heroku restart --app $HEROKU_APP_NAME
 
 workflows:
   version: 2
   build-and-deploy:
     jobs:
       - build
-      - deploy:
+      - deploy_staging:
           requires:
             - build
           filters:
             branches:
-              only: master
+              only: staging
