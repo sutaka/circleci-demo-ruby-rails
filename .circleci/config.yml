@@ -1,7 +1,5 @@
 version: 2
 jobs:
-  build_frontend:
-
   backend_test:
     parallelism: 3
     docker:
