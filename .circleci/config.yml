@@ -1,6 +1,8 @@
 version: 2
 jobs:
   build_front:
+    machine:
+        enabled: true
     steps:
       - run: npm install
       # - run: npm run deploy
